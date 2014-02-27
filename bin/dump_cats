@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "nokogiri"
+require "open-uri"
+require "yaml"
+
+SOURCE = "http://catcatcatcatcatcatcatcatcatcats.tumblr.com/api/read"
+
+class Dumper
+  attr_reader :pics
+
+  def initialize
+    @pics = []
+  end
+
+  def dump
+    pics.concat(page) until done?
+    open(File.expand_path("../lib/assets/cats.yml", __dir__), "w") { |f|
+      f << YAML.dump(pics)
+    }
+  end
+
+  def total_pics
+    @total_posts ||= begin
+                       doc = Nokogiri::XML(open(SOURCE))
+                       Integer(doc.search("posts").first["total"])
+                     end
+  end
+
+  def page
+    doc = Nokogiri::XML(open("#{SOURCE}?start=#{pics.size}"))
+    doc.search("post photo-url").select { |pic|
+      pic["max-width"] == "1280"
+    }.map(&:text)
+  end
+
+  def done?
+    pics.size >= 1500
+  end
+end
+
+Dumper.new.dump
