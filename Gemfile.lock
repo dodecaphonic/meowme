@@ -2,6 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     nokogiri (1.5.11)
+    puma (2.7.1)
+      rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-protection (1.5.2)
       rack
@@ -16,4 +18,5 @@ PLATFORMS
 
 DEPENDENCIES
   nokogiri
+  puma
   sinatra
